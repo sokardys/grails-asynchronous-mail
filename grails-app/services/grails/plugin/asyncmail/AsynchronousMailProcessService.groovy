@@ -21,9 +21,10 @@ class AsynchronousMailProcessService {
         Integer gparsPoolSize = grailsApplication.config.asynchronous.mail.gparsPoolSize
 
         // Send each message and save new status
-        try {
-            GParsPool.withPool(gparsPoolSize) {
-                messagesIds.eachParallel {Long messageId ->
+
+        GParsPool.withPool(gparsPoolSize) {
+            messagesIds.eachParallel {Long messageId ->
+                // try {
                     persistenceInterceptor.init()
                     log.debug('Open new session.')
                     try {
@@ -43,10 +44,10 @@ class AsynchronousMailProcessService {
                             log.error("Failed to finalize session after message sent.", e);
                         }
                     }
-                }
+                // } catch (Exception e) {
+                //     log.error('Abort mail sent:' + e.message, e)
+                // }
             }
-        } catch (Exception e) {
-            log.error('Abort mail sent.', e)
         }
     }
 
